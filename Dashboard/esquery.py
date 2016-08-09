@@ -54,14 +54,14 @@ es_queries = [
                            "must": [
                               {
                                  "terms": {
-                                    "flags.all_normal_sequence_exists_flag": [
+                                    "flags.normal_sequence": [
                                        'true'
                                     ]
                                  }
                               },
                               {
                                  "terms": {
-                                    "flags.all_tumor_sequences_exists_flag": [
+                                    "flags.tumor_sequence": [
                                        'true'
                                     ]
                                  }
@@ -117,14 +117,14 @@ es_queries = [
                            "must": [
                               {
                                  "terms": {
-                                    "flags.all_normal_sequence_exists_flag": [
+                                    "flags.normal_sequence": [
                                        'true'
                                     ]
                                  }
                               },
                               {
                                  "terms": {
-                                    "flags.all_tumor_sequences_exists_flag": [
+                                    "flags.tumor_sequence": [
                                        'true'
                                     ]
                                  }
@@ -133,14 +133,14 @@ es_queries = [
                            "must_not": [
                               {
                                  "terms": {
-                                    "flags.all_normal_alignment_exists_flag": [
+                                    "flags.normal_alignment": [
                                        'true'
                                     ]
                                  }
                               },
                               {
                                  "terms": {
-                                    "flags.all_tumor_alignment_exists_flag": [
+                                    "flags.tumor_alignment": [
                                        'true'
                                     ]
                                  }
@@ -194,14 +194,14 @@ es_queries = [
                            "must": [
                               {
                                  "terms": {
-                                    "flags.all_normal_alignment_exists_flag": [
+                                    "flags.normal_alignment": [
                                        'true'
                                     ]
                                  }
                               },
                               {
                                  "terms": {
-                                    "flags.all_tumor_alignment_exists_flag": [
+                                    "flags.tumor_alignment": [
                                        'true'
                                     ]
                                  }
@@ -210,7 +210,7 @@ es_queries = [
                            "must_not": [
                               {
                                  "terms": {
-                                    "flags.all_tumor_somatic_variants_exists_flag": [
+                                    "flags.tumor_somatic_variants": [
                                        'true'
                                     ]
                                  }
@@ -267,56 +267,56 @@ es_queries = [
                            "must": [
                               {
                                  "terms": {
-                                    "flags.all_normal_sequence_exists_flag": [
+                                    "flags.normal_sequence": [
                                        'true'
                                     ]
                                  }
                               },
                               {
                                  "terms": {
-                                    "flags.all_tumor_sequences_exists_flag": [
+                                    "flags.tumor_sequence": [
                                        'true'
                                     ]
                                  }
                               },
                               {
                                  "terms": {
-                                    "flags.all_normal_alignment_exists_flag": [
+                                    "flags.normal_alignment": [
                                        'true'
                                     ]
                                  }
                               },
                               {
                                  "terms": {
-                                    "flags.all_tumor_alignment_exists_flag": [
+                                    "flags.tumor_alignment": [
                                        'true'
                                     ]
                                  }
                               },
                               {
                                  "terms": {
-                                    "flags.all_normal_germline_variants_exists_flag": [
+                                    "flags.normal_germline_variants": [
                                        'true'
                                     ]
                                  }
                               },
                               {
                                  "terms": {
-                                    "flags.all_tumor_somatic_variants_exists_flag": [
+                                    "flags.tumor_somatic_variants": [
                                        'true'
                                     ]
                                  }
                               },
                               {
                                  "terms": {
-                                    "flags.all_normal_rnaseq_variants_exists_flag": [
+                                    "flags.normal_rnaseq_variants": [
                                        'true'
                                     ]
                                  }
                               },
                               {
                                  "terms": {
-                                    "flags.all_tumor_rnaseq_variants_exists_flag": [
+                                    "flags.tumor_rnaseq_variants": [
                                        'true'
                                     ]
                                  }
@@ -335,7 +335,6 @@ es_queries = [
    #all flags are 'true'
    #How many donors are complete in their upload vs. how many have one or more missing samples?
 ]
-
 #checking if the word represents a number
 def repNum(s):
     try: 
@@ -405,4 +404,5 @@ with open("data.csv", 'a') as outfile1:
       outfile.write(']')
 
 with open("date.txt","w") as outfile2:
+   outfile2.write("Date Updated: ")
    outfile2.write(str(strftime("%m/%d/%Y %I:%M%p")))
