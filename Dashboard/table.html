@@ -32,18 +32,50 @@
 </ul>
 
 <header class="text">
-   <h1>Tables</h1>
+   <h1>Table</h1>
    <p> This website is still being tested. </p>
 </header>
-<body style = "background-color:#F5F4EB;" class="text">
 
+<style>
+   table {
+      border-collapse: collapse;
+      width: 100%;
+      max-width:600px;
+      background-color:  white;
+   }
+   table, th, td {
+      border: 1px solid black;
+      padding: 5px;
+      text-align: left;
+   }
+   th{
+      height: 50px;
+      background-color: #00458c;
+      color: white;
+   }
+   tr:nth-child(even) {
+      background-color: #e6f2ff
+   }
+   tr:hover{
+      background-color: #b3d9ff;
+   }
+   /* link colors in the chart */
+   #chart a:link{ color:#00458c; } 
+   #chart a:visited{ color:#00458c; } 
+   #chart a:hover{ color:white; } 
+   #chart a:active{ color:#00458c;}
+   
+</style>
+
+<body style = "background-color:#F5F4EB;" class="text">
 <script src="d3.v3.min.js"></script>
 
 <script src="http://d3js.org/d3.v3.js"></script>​
 
-<div id="chart"></div>
+<center><div id="chart" style="overflow-x:auto;"></div></center>
+
 <script>
-d3.json('sample.json', function (error,data) {
+d3.csv('table.csv', function (error,data) {
 
   function tabulate(data, columns) {
 		var table = d3.select("#chart").append('table')
@@ -76,7 +108,6 @@ d3.json('sample.json', function (error,data) {
 		    .html(function(d){
 		      if (trow == false) {trow = true;}
 		      else {trow = false;}
-		      console.log(trow);
 		      if (trow == false) { return "<a href=" + d.value +">" +d.value +"</a>"; }
 		      else { return d.value}});
 		
@@ -84,11 +115,12 @@ d3.json('sample.json', function (error,data) {
 	}
 
 	// render the table(s)
-	var filetable = tabulate(data, ['Name', 'Last Modified']); // 2 column table
+	var filetable = tabulate(data, ['Name', 'Date Updated']); // 2 column table
 
 });
-</script>
 
+</script>
+<p> Click on the name of the files listed above to download the file. </p>
 </body>
 <footer class="text">
 <section style="color: white">UCSC Genomics Institute - Analysis Core 

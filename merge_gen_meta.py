@@ -20,6 +20,7 @@ import dateutil
 import dateutil.parser
 from urllib import urlopen
 from subprocess import Popen, PIPE
+from time import strftime
 
 first_write = dict()
 index_index = 0
@@ -680,8 +681,14 @@ def main():
         print  "%s merged json objects were valid." % (validated_num)
         dumpResult(validated, "validated.jsonl")
         dumpResult(validated, 'elasticsearch.jsonl')
+        dumpResult(validated, "Dashboard/validated.jsonl")
+        dumpResult(validated, 'Dashboard/elasticsearch.jsonl')
         logging.info("All done, find index in elasticsearch.jsonl")
         print "All done, find index in elasticsearch.jsonl"
+        with open("Dashboard/table.csv","w") as outfile:
+            outfile.write("Name,Date Updated\n")
+            outfile.write("validated.jsonl,"+str(strftime("%m/%d/%Y %I:%M%p"))+"\n")
+            outfile.write("elasticsearch.jsonl,"+str(strftime("%m/%d/%Y %I:%M%p"))+"\n")
 
     if not validated:
         logging.info("No objects were merged.")
