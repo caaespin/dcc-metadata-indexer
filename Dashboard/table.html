@@ -1,40 +1,20 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
 <head>
+   <title>Table</title>
+   
+   <!-- stylesheets -->
    <link href="https://fonts.googleapis.com/css?family=Muli" rel="stylesheet">
-	<title>Table</title>
 	<link rel="stylesheet" type="text/css" href="mystyle.css">
+	
+	<!-- scripts -->
+   <script src="d3.v3.min.js"></script>
+   <script src="http://d3js.org/d3.v3.js"></script>​
+   <script src="jquery-3.1.0.min.js"></script>
 </head>
 
-<div class="imgcgl">
-   <div class="imgcontainer">
-      <a href="https://genomics.soe.ucsc.edu/">
-         <img src="UCSC-Logo-genomics-web-80.png" alt="University of California Santa Cruz" class="imglogo">
-      </a>
-   </div>
-   <div class="cglcontainer" style="float: right;">
-      <a href="https://cgl.genomics.ucsc.edu/" class="text">Computational Genomics Laboratory</a>
-   </div>
-</div>
-<ul class="text">
-   <li><a href="index.html">Home</a></li>
-   <div class="dropdown">
-      <li class="dropbtn"><a href="projects.html">Projects</a></li>
-      <div class="dropdown-content">
-         <a href="project_1.html">Project 1</a>
-         <a href="project_2.html">Project 2</a>
-         <a href="project_3.html">Project 3</a>
-      </div>
-   </div>
-  <li><a href="https://ucsc-cgl.atlassian.net/wiki/">Wiki</a></li>
-  <li><a href="about.html">About</a></li>
-  <li><a href="table.html">Table</a></li>
-</ul>
-
-<header class="text">
-   <h1>Table</h1>
-   <p> This website is still being tested. </p>
-</header>
+<!-- top navigation bar -->
+<div id="header"> <script>$('#header').load("header.html");</script> </div> 
 
 <style>
    table {
@@ -65,73 +45,66 @@
    #chart a:hover{ color:white; } 
    #chart a:active{ color:#00458c;}
    
+   chart {
+      overflow-x:auto;
+   }
 </style>
 
-<body style = "background-color:#F5F4EB;" class="text">
-<script src="d3.v3.min.js"></script>
+<header class="text">
+   <h1>Table</h1>
+   <p> This website is still being tested. </p>
+</header>
 
-<script src="http://d3js.org/d3.v3.js"></script>​
+<body class="text">
 
-<center><div id="chart" style="overflow-x:auto;"></div></center>
+   <center><div id="chart"></div></center>
 
-<script>
-d3.csv('table.csv', function (error,data) {
-
-  function tabulate(data, columns) {
-		var table = d3.select("#chart").append('table')
-		var thead = table.append('thead')
-		var tbody = table.append('tbody');
-		var trow = true;
+   <script>
+      d3.csv('table.csv', function (error,data) {
+        function tabulate(data, columns) {
+            var table = d3.select("#chart").append('table')
+            var thead = table.append('thead')
+            var tbody = table.append('tbody');
+            var trow = true;
       
-		// append the header row
-		thead.append('tr')
-		  .selectAll('th')
-		  .data(columns).enter()
-		  .append('th')
-		    .text(function (column) { return column; });
+            // append the header row
+            thead.append('tr')
+               .selectAll('th')
+               .data(columns).enter()
+               .append('th')
+                  .text(function (column) { return column; });
 
-		// create a row for each object in the data
-		var rows = tbody.selectAll('tr')
-		  .data(data)
-		  .enter()
-		  .append('tr');
+            // create a row for each object in the data
+            var rows = tbody.selectAll('tr')
+               .data(data)
+               .enter()
+               .append('tr');
 
-		// create a cell in each row for each column
-		var cells = rows.selectAll('td')
-		  .data(function (row) {
-		    return columns.map(function (column) {
-		      return {column: column, value: row[column]};
-		    });
-		  })
-		  .enter()
-		  .append('td') 
-		    .html(function(d){
-		      if (trow == false) {trow = true;}
-		      else {trow = false;}
-		      if (trow == false) { return "<a href=" + d.value +">" +d.value +"</a>"; }
-		      else { return d.value}});
-		
-	  return table;
-	}
+            // create a cell in each row for each column
+            var cells = rows.selectAll('td')
+               .data(function (row) {
+                  return columns.map(function (column) {
+                     return {column: column, value: row[column]};
+                  });
+               })
+               .enter()
+               .append('td') 
+                  .html(function(d){
+                     if (trow == false) {trow = true;}
+                     else {trow = false;}
+                     if (trow == false) { return "<a href=" + d.value +">" +d.value +"</a>"; }
+                     else { return d.value}});
+      
+            return table;
+         }
 
-	// render the table(s)
-	var filetable = tabulate(data, ['Name', 'Date Updated']); // 2 column table
+         // render the table(s)
+         var filetable = tabulate(data, ['Name', 'Date Updated']); // 2 column table
+      });
+   </script>
 
-});
-
-</script>
-<p> Click on the name of the files listed above to download the file. </p>
+   <p> Click on the name of the files listed above to download the file. </p>
 </body>
-<footer class="text">
-<section style="color: white">UCSC Genomics Institute - Analysis Core 
-<ul class="text" style="float: right; font-size:50%; padding: 4px;">
-   <li><a href="index.html">Home</a></li>
-   <li><a href="projects.html">Projects</a></li>
-   <li><a href="https://ucsc-cgl.atlassian.net/wiki/">Wiki</a></li>
-   <li><a href="about.html">About</a></li>
-   <li><a href="table.html">Table</a></li>
-</ul>
-</section>
-</footer>
 
-
+<!-- bottom navigation bar -->
+<div id="footer"> <script>$('#footer').load("footer.html");</script> </div> 

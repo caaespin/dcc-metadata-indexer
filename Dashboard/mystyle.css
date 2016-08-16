@@ -15,6 +15,11 @@ ul {
    padding: 0px 16px 0px 16px;
    background-color: #555;
 }
+body {
+   background-color:#F5F4EB;
+}
+
+
 /* link colors for top navigation bar*/
 li {
    display: inline;
@@ -109,3 +114,4 @@ footer{
    background-color: #555;
 }
 .text { font-family: 'Muli', sans-serif;}
+
