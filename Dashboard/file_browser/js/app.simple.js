@@ -12,8 +12,11 @@ angular.module('multiselect', [
 
 /* Controller Module */
 angular.module('multiselect.controllers', [])
-  .controller('SearchCtrl', function($scope, translator, ejsResource) {
-
+  .controller('SearchCtrl', function($scope, translator, ejsResource, $timeout) {
+$scope.offset = 0;
+var app = angular.module('myApp', []);
+app.controller('myCtrl', function($scope) {
+});
     // point to your ElasticSearch server
     //var ejs = ejsResource('http://mzgephdfgnfskfpm.api.qbox.io');
     var ejs = ejsResource('http://ucsc-cgl.org:9200');
@@ -21,7 +24,7 @@ angular.module('multiselect.controllers', [])
     var type = 'meta';
     // the fields we want to facet on
     var facets = ['center_name', 'program', 'project', 'workflow', 'analysis_type', 'specimen_type', 'file_type'];
-
+    
     // for storing selected filters
     // format will be {field: [term1, term2], field2: [term1, term2]}
     var filters = {};
@@ -43,7 +46,7 @@ angular.module('multiselect.controllers', [])
           delete filters[field];
         }
       }
-
+      $scope.offset=0;
       $scope.search()
     };
 
@@ -51,7 +54,8 @@ angular.module('multiselect.controllers', [])
     $scope.hasFilter = function (field, term) {
       return (_.has(filters, field) && _.contains(filters[field], term));
     }
-
+   
+   
     // define our search function that will be called when a user
     // submits a search or selects a facet
     $scope.search = function() {
@@ -60,8 +64,10 @@ angular.module('multiselect.controllers', [])
         .indices(index)
         .types(type)
         .sort('id') // sort by document id
-        .query(ejs.MatchAllQuery()); // match all documents
-
+        .query(ejs.MatchAllQuery()) // match all documents
+        .size(10) //number of items on table
+        .from($scope.offset*10); //starting point
+      
       // create the facets
       var facetObjs = _.map(facets, function (facetField) {
         return ejs.TermsFacet(facetField + 'Facet')
@@ -86,7 +92,6 @@ angular.module('multiselect.controllers', [])
         } else if (facetFilters.length > 1) {
           facetObj.facetFilter(ejs.BoolFilter().must(facetFilters));
         }
-
         request.facet(facetObj);
       });
 
@@ -96,15 +101,29 @@ angular.module('multiselect.controllers', [])
       } else if (filterObjs.length > 1) {
         request.filter(ejs.BoolFilter().must(filterObjs));
       }
-
+      
       // execute the search
       $scope.restQry = translator(request._self());
       $scope.results = request.doSearch();
     };
-
-    $scope.search();
+      
+      
+      //for paging, refresh chart on 
+      $scope.refresh = function($pcount){
+         $scope.offset= $scope.offset+$pcount;
+         if($scope.offset === 0){
+            $scope.back = "";
+         }
+         else{
+            $scope.back = "Back";
+         }
+         $scope.search();
+      }
+      $scope.search();
+      
   });
-
+ 
+    
 /* Service Module */
 angular.module('multiselect.service', [])
   .factory('translator', function () {
@@ -196,3 +215,4 @@ angular.module('multiselect.service', [])
 
     return FormatJSON;
   });
+

@@ -19,11 +19,12 @@
     <link rel="stylesheet" href="common/css/elasticjs.css">
 
     <script src="common/lib/modernizr-2.6.1.min.js"></script>
+
 </head>
 
 <style>
 body{
-   font-family: Muli;
+   font-family: Arial;
 }
 
 .chart {
@@ -45,7 +46,6 @@ button {
 }
 
 </style>
-
 <body ng-controller="SearchCtrl">
   <div class="imgcgl">
    <div class="imgcontainer">
@@ -150,7 +150,7 @@ button {
                     </li>
                 </ul-->
                 <div class="table-responsive">
-                  <table class="table table-striped">
+                  <table class="table table-striped" id="example">
                     <thead>
                       <tr>
                         <!--th>Center</th>
@@ -185,7 +185,16 @@ button {
             </div>
           </div>
     </div>
-
+   
+<center>
+<div ng-app="myApp" ng-contoller="myCtrl">
+<span ng-click="refresh(-1);">{{back}}</span>
+<span ng-click="refresh(1);">Next</span>
+<p>Page: {{offset+1}}</p>
+<a href="sample.tsv" download>here</a>
+</div>
+</center>
+ 
 
     <footer class="text">
 <section style="color: white">UCSC Genomics Institute - Analysis Core
