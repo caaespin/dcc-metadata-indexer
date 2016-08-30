@@ -19,6 +19,7 @@
     <link rel="stylesheet" href="common/css/elasticjs.css">
 
     <script src="common/lib/modernizr-2.6.1.min.js"></script>
+    <script src="common/js/FileSaver.min.js"></script>
 
 </head>
 
@@ -66,7 +67,6 @@ button {
 </ul>
     <div class="container-fluid">
         <div class="row-fluid">
-
             <div class="span2 well text">
                 <ul class="nav nav-sidebar">
                     <li class="nav-header">Center Name</li>
@@ -150,7 +150,7 @@ button {
                     </li>
                 </ul-->
                 <div class="table-responsive">
-                  <table class="table table-striped" id="example">
+                  <table class="table table-striped">
                     <thead>
                       <tr>
                         <!--th>Center</th>
@@ -166,7 +166,6 @@ button {
                       </tr>
                     </thead>
                     <tbody>
-
                       <tr ng-repeat="hit in results.hits.hits">
                         <!--td>{{hit._source.center}}</td>
                         <td>{{hit._source.program}}</td-->
@@ -184,18 +183,19 @@ button {
                 </div>
             </div>
           </div>
-    </div>
-   
+    </div>   
+
 <center>
-<div ng-app="myApp" ng-contoller="myCtrl">
+<div>
 <span ng-click="refresh(-1);">{{back}}</span>
-<span ng-click="refresh(1);">Next</span>
-<p>Page: {{offset+1}}</p>
-<a href="sample.tsv" download>here</a>
+<span ng-click="refresh(1);" placeholder="{{next}}"">{{next}} 
+   <br> Page: {{offset+1}} {{of}} {{poutof}}
+</span>
+<br>
+<span ng-click="downloadfile();">download</span>
 </div>
 </center>
  
-
     <footer class="text">
 <section style="color: white">UCSC Genomics Institute - Analysis Core
 <ul class="header" style="float: right; font-size:50%; padding: 4px;">
@@ -206,7 +206,6 @@ button {
 </ul>
 </section>
 </footer>
-
 
     <!-- project dependencies -->
     <script src="common/lib/underscore.min.js"></script>

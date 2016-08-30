@@ -10,13 +10,18 @@ angular.module('multiselect', [
   'elasticjs.service'
 ]);
 
+
 /* Controller Module */
 angular.module('multiselect.controllers', [])
   .controller('SearchCtrl', function($scope, translator, ejsResource, $timeout) {
-$scope.offset = 0;
-var app = angular.module('myApp', []);
-app.controller('myCtrl', function($scope) {
-});
+    $scope.offset = 0;
+    $scope.center_num = [];
+    $scope.next= 'Next';
+    $scope.poutof="";
+    $scope.resultsArr = [];
+    var number_hits = 0;
+    $scope.bodyArr = [];
+    var bodyStr;
     // point to your ElasticSearch server
     //var ejs = ejsResource('http://mzgephdfgnfskfpm.api.qbox.io');
     var ejs = ejsResource('http://ucsc-cgl.org:9200');
@@ -47,7 +52,8 @@ app.controller('myCtrl', function($scope) {
         }
       }
       $scope.offset=0;
-      $scope.search()
+      $scope.refresh($scope.offset)
+      
     };
 
     // if a filter is applied or not
@@ -55,26 +61,26 @@ app.controller('myCtrl', function($scope) {
       return (_.has(filters, field) && _.contains(filters[field], term));
     }
    
-   
+    
     // define our search function that will be called when a user
     // submits a search or selects a facet
-    $scope.search = function() {
+    $scope.search = function(sizeVar) {
       // setup the request
       var request = ejs.Request()
         .indices(index)
         .types(type)
         .sort('id') // sort by document id
         .query(ejs.MatchAllQuery()) // match all documents
-        .size(10) //number of items on table
+        .size(sizeVar) //number of items on table
         .from($scope.offset*10); //starting point
-      
+
       // create the facets
       var facetObjs = _.map(facets, function (facetField) {
         return ejs.TermsFacet(facetField + 'Facet')
           .field(facetField)
           .allTerms(true);
       });
-
+      
       // create the filters
       var filterObjs = _.map(filters, function (filterTerms, filterField) {
         return ejs.TermsFilter(filterField, filterTerms);
@@ -105,24 +111,85 @@ app.controller('myCtrl', function($scope) {
       // execute the search
       $scope.restQry = translator(request._self());
       $scope.results = request.doSearch();
+      $scope.resultsArr.push($scope.results);
+      console.log($scope.resultsArr);
     };
-      
-      
       //for paging, refresh chart on 
-      $scope.refresh = function($pcount){
-         $scope.offset= $scope.offset+$pcount;
+      $scope.refresh = function(pcount){
+         $scope.offset = $scope.offset+pcount;
+         $scope.search(10);
+         $scope.resultloop();
          if($scope.offset === 0){
             $scope.back = "";
          }
          else{
             $scope.back = "Back";
          }
-         $scope.search();
+         if(($scope.offset*10)+10 > number_hits){
+            $scope.next = "";
+         }
+         else{
+            $scope.next = "Next";
+         }
+         if($scope.offset === 0){
+            $scope.poutof = "";
+            $scope.of = "";
+         }
+         else{
+         $scope.poutof = Math.ceil((number_hits)/10);
+         $scope.of = "of";
+         }
       }
-      $scope.search();
       
+      $scope.search(10);
+      
+      //download as tsv
+      var titledown = "Project\tDonor\tSpecimen\tType\tAnalysis Type\tWorkflow\tFile Type\tFile"
+      $scope.downloadfile = function(){
+         var offsetTemp = $scope.offset;
+         $scope.offset = 0;
+         $scope.search(100);
+         console.log(number_hits);
+         bodydown(10);
+         var file = new File([titledown+"\n"+bodyStr], "sample.tsv", {type: "text/plain;charset=utf-8"});
+         saveAs(file);
+         $scope.offset = offsetTemp;
+         $scope.search(10);
+      }
+      
+      //finds total number of hits
+      $scope.resultloop = function(){
+         console.log($scope.resultsArr[0].$$v);
+         console.log($scope.resultsArr.length-1);
+         number_hits = $scope.resultsArr[0].$$v.hits.total;
+         while ($scope.resultsArr.length > 1){
+            $scope.resultsArr.splice(index, 1);
+         }
+      }
+      
+      //download as tsv helper function
+      var bodydown = function(numofhits){
+         $scope.bodyArr = [];
+         for (var i=0; i<numofhits; i++){
+            var projectDown = $scope.resultsArr[0].$$v.hits.hits[i]._source.project;
+            var donorDown = $scope.resultsArr[0].$$v.hits.hits[i]._source.donor;
+            var specimen_typeDown = $scope.resultsArr[0].$$v.hits.hits[i]._source.specimen_type;
+            var analysis_typeDown = $scope.resultsArr[0].$$v.hits.hits[i]._source.analysis_type;
+            var workflowDown = $scope.resultsArr[0].$$v.hits.hits[i]._source.workflow;
+            var file_typeDown =$scope.resultsArr[0].$$v.hits.hits[i]._source.file_type;
+            var titleDown =$scope.resultsArr[0].$$v.hits.hits[i]._source.title;
+            var download_idDown = $scope.resultsArr[0].$$v.hits.hits[i]._source.download_id;
+            $scope.bodyArr.push(projectDown+"\t"+donorDown+"\t"+specimen_typeDown+"\t"+analysis_typeDown+"\t"+workflowDown+"\t"+file_typeDown+"\t"+titleDown+"\t"+download_idDown);
+         }
+         bodyStr = $scope.bodyArr[0];
+         for (var i=1;i<numofhits;i++){
+            bodyStr = bodyStr.concat("\n");
+            bodyStr = bodyStr.concat($scope.bodyArr[i]);
+         }
+      }
   });
- 
+
+
     
 /* Service Module */
 angular.module('multiselect.service', [])
