@@ -21,6 +21,9 @@ angular.module('multiselect.controllers', [])
     $scope.resultsArr = [];
     var number_hits = 0;
     $scope.bodyArr = [];
+    var pieArrAnalysis = [];
+    var pieArrWorkflow = [];
+    var pieArrFile = [];
     var bodyStr;
     // point to your ElasticSearch server
     //var ejs = ejsResource('http://mzgephdfgnfskfpm.api.qbox.io');
@@ -73,7 +76,7 @@ angular.module('multiselect.controllers', [])
         .query(ejs.MatchAllQuery()) // match all documents
         .size(sizeVar) //number of items on table
         .from($scope.offset*10); //starting point
-
+      console.log("offset " + $scope.offset);
       // create the facets
       var facetObjs = _.map(facets, function (facetField) {
         return ejs.TermsFacet(facetField + 'Facet')
@@ -117,6 +120,9 @@ angular.module('multiselect.controllers', [])
       //for paging, refresh chart on 
       $scope.refresh = function(pcount){
          $scope.offset = $scope.offset+pcount;
+         drawAnalysisChart();
+         drawWorkflowChart();
+         drawFileChart();
          $scope.search(10);
          $scope.resultloop();
          if($scope.offset === 0){
@@ -145,30 +151,31 @@ angular.module('multiselect.controllers', [])
       
       //download as tsv
       var titledown = "Project\tDonor\tSpecimen\tType\tAnalysis Type\tWorkflow\tFile Type\tFile"
-      $scope.downloadfile = function(){
+      $scope.downloadfile = function(numDown){
          var offsetTemp = $scope.offset;
          $scope.offset = 0;
-         $scope.search(100);
-         console.log(number_hits);
-         bodydown(10);
+         $scope.search(numDown);
+         bodydown(numDown);
          var file = new File([titledown+"\n"+bodyStr], "sample.tsv", {type: "text/plain;charset=utf-8"});
          saveAs(file);
-         $scope.offset = offsetTemp;
-         $scope.search(10);
+
       }
       
       //finds total number of hits
       $scope.resultloop = function(){
-         console.log($scope.resultsArr[0].$$v);
-         console.log($scope.resultsArr.length-1);
+         //console.log($scope.resultsArr[0].$$v);
+         //console.log($scope.resultsArr.length-1);
          number_hits = $scope.resultsArr[0].$$v.hits.total;
          while ($scope.resultsArr.length > 1){
             $scope.resultsArr.splice(index, 1);
          }
+         return number_hits;
       }
       
       //download as tsv helper function
       var bodydown = function(numofhits){
+         console.log("resultsArr ");
+         console.log($scope.resultsArr);
          $scope.bodyArr = [];
          for (var i=0; i<numofhits; i++){
             var projectDown = $scope.resultsArr[0].$$v.hits.hits[i]._source.project;
@@ -187,8 +194,116 @@ angular.module('multiselect.controllers', [])
             bodyStr = bodyStr.concat($scope.bodyArr[i]);
          }
       }
-  });
+      
+      // turns pie data into array format
+      $scope.piedata = function(pienum){
+         pieArrAnalysis =[];
+         var pieTemp = [];
+         var pieTemp2 = [];
+         for (var i=0; i<$scope.resultsArr[0].$$v.facets.analysis_typeFacet.terms.length; i++){
+            pieTemp = [];
+            var analysis_typeTerm = $scope.resultsArr[0].$$v.facets.analysis_typeFacet.terms[i].term;
+            var analysis_typeCount = $scope.resultsArr[0].$$v.facets.analysis_typeFacet.terms[i].count;
+            pieTemp.push(analysis_typeTerm);
+            pieTemp.push(analysis_typeCount);
+            pieTemp2.push(pieTemp);
+         }
+         for (var i=0; i<$scope.resultsArr[0].$$v.facets.analysis_typeFacet.terms.length; i++){
+            pieArrAnalysis.push(pieTemp2[i]);
+         }
+         pieArrWorkflow =[];
+         pieTemp = [];
+         pieTemp2 = [];
+         for (var i=0; i<$scope.resultsArr[0].$$v.facets.workflowFacet.terms.length; i++){
+            pieTemp = [];
+            var workflowTerm = $scope.resultsArr[0].$$v.facets.workflowFacet.terms[i].term;
+            var workflowCount = $scope.resultsArr[0].$$v.facets.workflowFacet.terms[i].count;
+            pieTemp.push(workflowTerm);
+            pieTemp.push(workflowCount);
+            pieTemp2.push(pieTemp);
+         }
+         for (var i=0; i<$scope.resultsArr[0].$$v.facets.workflowFacet.terms.length; i++){
+            pieArrWorkflow.push(pieTemp2[i]);
+         }
+         pieArrFile =[];
+         pieTemp = [];
+         pieTemp2 = [];
+         for (var i=0; i<$scope.resultsArr[0].$$v.facets.file_typeFacet.terms.length; i++){
+            pieTemp = [];
+            var file_typeTerm = $scope.resultsArr[0].$$v.facets.file_typeFacet.terms[i].term;
+            var file_typeCount = $scope.resultsArr[0].$$v.facets.file_typeFacet.terms[i].count;
+            pieTemp.push(file_typeTerm);
+            pieTemp.push(file_typeCount);
+            pieTemp2.push(pieTemp);
+         }
+         for (var i=0; i<$scope.resultsArr[0].$$v.facets.file_typeFacet.terms.length; i++){
+            pieArrFile.push(pieTemp2[i]);
+         }
+         console.log(pieArrAnalysis);
+         console.log(pieArrWorkflow);
+         console.log(pieArrFile);
+      }
+      
+      //pie chart maker
+      var chart;
+      google.charts.load('current', {'packages':['corechart']});
+      google.charts.setOnLoadCallback(drawAnalysisChart);
+      function drawAnalysisChart() {
+         $scope.piedata(number_hits);
+         var data = new google.visualization.DataTable();
+         data.addColumn('string', 'Type');
+         data.addColumn('number', 'Number');
+         data.addRows(pieArrAnalysis);
 
+         var options = {
+            title: 'Analysis Type',
+            width: 600,
+            height: 300
+         };
+
+         chart = new google.visualization.PieChart(document.getElementById('piechartAnalysis'));
+
+         chart.draw(data, options);
+      }      
+      google.charts.setOnLoadCallback(drawWorkflowChart);
+      function drawWorkflowChart() {
+         $scope.piedata(number_hits);
+         var data = new google.visualization.DataTable();
+         data.addColumn('string', 'Type');
+         data.addColumn('number', 'Number');
+         data.addRows(pieArrWorkflow);
+         
+         var options = {
+            title: 'Workflow Type',
+            width: 600,
+            height: 300
+         };
+
+         chart = new google.visualization.PieChart(document.getElementById('piechartWorkflow'));
+
+         chart.draw(data, options);
+      }    
+      google.charts.setOnLoadCallback(drawFileChart);
+      function drawFileChart() {
+         $scope.piedata(number_hits);
+         var data = new google.visualization.DataTable();
+         data.addColumn('string', 'Type');
+         data.addColumn('number', 'Number');
+         data.addRows(pieArrFile);
+         
+         var options = {
+            title: 'File Type',
+            width: 600,
+            height: 300
+         };
+
+         chart = new google.visualization.PieChart(document.getElementById('piechartFile'));
+
+         chart.draw(data, options);
+      }    
+      
+      
+  });
 
     
 /* Service Module */
