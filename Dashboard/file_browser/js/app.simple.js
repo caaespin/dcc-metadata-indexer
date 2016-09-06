@@ -202,38 +202,30 @@ angular.module('multiselect.controllers', [])
          var pieTemp2 = [];
          for (var i=0; i<$scope.resultsArr[0].$$v.facets.analysis_typeFacet.terms.length; i++){
             pieTemp = [];
-            var analysis_typeTerm = $scope.resultsArr[0].$$v.facets.analysis_typeFacet.terms[i].term;
-            var analysis_typeCount = $scope.resultsArr[0].$$v.facets.analysis_typeFacet.terms[i].count;
-            pieTemp.push(analysis_typeTerm);
-            pieTemp.push(analysis_typeCount);
+            pieTemp.push($scope.resultsArr[0].$$v.facets.analysis_typeFacet.terms[i].term);
+            pieTemp.push($scope.resultsArr[0].$$v.facets.analysis_typeFacet.terms[i].count);
             pieTemp2.push(pieTemp);
          }
          for (var i=0; i<$scope.resultsArr[0].$$v.facets.analysis_typeFacet.terms.length; i++){
             pieArrAnalysis.push(pieTemp2[i]);
          }
          pieArrWorkflow =[];
-         pieTemp = [];
          pieTemp2 = [];
          for (var i=0; i<$scope.resultsArr[0].$$v.facets.workflowFacet.terms.length; i++){
             pieTemp = [];
-            var workflowTerm = $scope.resultsArr[0].$$v.facets.workflowFacet.terms[i].term;
-            var workflowCount = $scope.resultsArr[0].$$v.facets.workflowFacet.terms[i].count;
-            pieTemp.push(workflowTerm);
-            pieTemp.push(workflowCount);
+            pieTemp.push($scope.resultsArr[0].$$v.facets.workflowFacet.terms[i].term);
+            pieTemp.push($scope.resultsArr[0].$$v.facets.workflowFacet.terms[i].count);
             pieTemp2.push(pieTemp);
          }
          for (var i=0; i<$scope.resultsArr[0].$$v.facets.workflowFacet.terms.length; i++){
             pieArrWorkflow.push(pieTemp2[i]);
          }
          pieArrFile =[];
-         pieTemp = [];
          pieTemp2 = [];
          for (var i=0; i<$scope.resultsArr[0].$$v.facets.file_typeFacet.terms.length; i++){
             pieTemp = [];
-            var file_typeTerm = $scope.resultsArr[0].$$v.facets.file_typeFacet.terms[i].term;
-            var file_typeCount = $scope.resultsArr[0].$$v.facets.file_typeFacet.terms[i].count;
-            pieTemp.push(file_typeTerm);
-            pieTemp.push(file_typeCount);
+            pieTemp.push($scope.resultsArr[0].$$v.facets.file_typeFacet.terms[i].term);
+            pieTemp.push($scope.resultsArr[0].$$v.facets.file_typeFacet.terms[i].count);
             pieTemp2.push(pieTemp);
          }
          for (var i=0; i<$scope.resultsArr[0].$$v.facets.file_typeFacet.terms.length; i++){
