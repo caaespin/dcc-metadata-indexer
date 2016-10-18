@@ -27,7 +27,8 @@ angular.module('multiselect.controllers', [])
     var bodyStr;
     // point to your ElasticSearch server
     //var ejs = ejsResource('http://mzgephdfgnfskfpm.api.qbox.io');
-    var ejs = ejsResource('http://ucsc-cgl.org:9200');
+    //var ejs = ejsResource('http://ucsc-cgl.org:9200');
+    var ejs = ejsResource('http://localhost:8080');
     var index = 'analysis_file_index';
     var type = 'meta';
     // the fields we want to facet on
@@ -72,7 +73,7 @@ angular.module('multiselect.controllers', [])
       var request = ejs.Request()
         .indices(index)
         .types(type)
-        .sort('id') // sort by document id
+        .sort('_id') // sort by document id
         .query(ejs.MatchAllQuery()) // match all documents
         .size(sizeVar) //number of items on table
         .from($scope.offset*10); //starting point
@@ -156,7 +157,7 @@ angular.module('multiselect.controllers', [])
          $scope.offset = 0;
          $scope.search(numDown);
          bodydown(numDown);
-         var file = new File([titledown+"\n"+bodyStr], "sample.tsv", {type: "text/plain;charset=utf-8"});
+         var file = new File([titledown+"\n"+bodyStr], "results.tsv", {type: "text/plain;charset=utf-8"});
          saveAs(file);
 
       }
@@ -249,7 +250,7 @@ angular.module('multiselect.controllers', [])
 
          var options = {
             title: 'Analysis Type',
-            width: 600,
+            width: 425,
             height: 300
          };
 
@@ -267,7 +268,7 @@ angular.module('multiselect.controllers', [])
          
          var options = {
             title: 'Workflow Type',
-            width: 600,
+            width: 425,
             height: 300
          };
 
@@ -285,7 +286,7 @@ angular.module('multiselect.controllers', [])
          
          var options = {
             title: 'File Type',
-            width: 600,
+            width: 425,
             height: 300
          };
 
