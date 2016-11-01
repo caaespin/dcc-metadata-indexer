@@ -463,6 +463,14 @@ EsConnector.controller('QueryController', function($scope, es, $compile) {
 
 var MyAPI_Connector = angular.module('MyAPI_Connector', []);
 
+//Parameter variable
+var config = {
+   params:{
+      filters: null
+
+   }
+}
+
 //Set up the factory, whatever that means
 MyAPI_Connector.factory('myService', function($http){
    return{
@@ -472,11 +480,24 @@ MyAPI_Connector.factory('myService', function($http){
    }
 });
 
+//Factory with parameters
+
+MyAPI_Connector.factory('myParams', function($http){
+   return{
+      data: function(){
+         return $http.get('http://localhost:5000/files/', config);
+      }
+   }
+});
+
 //I don't think I need to specify the service here like above so I will just shortcut it
-MyAPI_Connector.controller('API_Controller', function($scope, $http, $compile, myService){
-   $scope.mamal = 'calabazita'
+MyAPI_Connector.controller('API_Controller', function($scope, $http, $compile, myService, myParams){
+   //$scope.mamal = 'calabazita'
    $scope.hits = [];
    $scope.results = [];
+
+   var checked_boxes = {};
+   var my_filters = {'file':{}};
 
    // $scope.hits = myService.data().then(function(data){
    //    return data.data.hits;
@@ -501,11 +522,34 @@ MyAPI_Connector.controller('API_Controller', function($scope, $http, $compile, m
    //    //$scope.refresh();
    // }
    $scope.checking = function(facet, item){
-
+      if(!(facet+item in checked_boxes)){
+         //Add the checked box to the array containing all the checked boxes
+         checked_boxes[facet+item] = 1;
+         //Set the parameter
+         my_filters['file'][facet] = {'is':[item]}; 
+         console.log(my_filters);
+         //Apply the parameters and make the call to the server
+         config['params']['filters'] = my_filters;
+         myParams.data().then(function(data){
+            $scope.results = data.data.termFacets;
+            $scope.hits = data.data.hits;
+            return;
+         });
+      }
+      else{
+         delete checked_boxes[facet+item];
+         delete my_filters['file'][facet]['is'][item]; 
+      }
+      console.log(checked_boxes);
    }
 
    $scope.hasCheck = function(facet, item){
-
+      if(facet+item in checked_boxes){
+         return true;
+      }
+      else{
+         return false;
+      }
    }
 });
 
