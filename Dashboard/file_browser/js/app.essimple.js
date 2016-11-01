@@ -537,8 +537,17 @@ MyAPI_Connector.controller('API_Controller', function($scope, $http, $compile, m
          });
       }
       else{
+         //Delete the unchecked filters and call again the web service
          delete checked_boxes[facet+item];
-         delete my_filters['file'][facet]['is'][item]; 
+         delete my_filters['file'][facet]; 
+         config['params']['filters'] = my_filters;
+         //This is where you call the web service again. 
+         myParams.data().then(function(data){
+            $scope.results = data.data.termFacets;
+            $scope.hits = data.data.hits;
+            return;
+         });
+
       }
       console.log(checked_boxes);
    }
