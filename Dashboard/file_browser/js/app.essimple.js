@@ -458,5 +458,56 @@ EsConnector.controller('QueryController', function($scope, es, $compile) {
    }   
 });
 
+
+//****** THIS IS CARLOS'S TEST CODE. SEE IF IT WORKS. I CHANGED THE CONTROLLER BEING USED*******
+
+var MyAPI_Connector = angular.module('MyAPI_Connector', []);
+
+//Set up the factory, whatever that means
+MyAPI_Connector.factory('myService', function($http){
+   return{
+      data: function(){
+         return $http.get('http://localhost:5000/files/');
+      }
+   }
+});
+
+//I don't think I need to specify the service here like above so I will just shortcut it
+MyAPI_Connector.controller('API_Controller', function($scope, $http, $compile, myService){
+   $scope.mamal = 'calabazita'
+   $scope.hits = [];
+   $scope.results = [];
+
+   // $scope.hits = myService.data().then(function(data){
+   //    return data.data.hits;
+   // });
+   // $scope.results = myService.data().then(function(data){
+   //    return data.data.termFacets;
+   // });
+
+   myService.data().then(function(data){
+      $scope.results = data.data.termFacets;
+      $scope.hits = data.data.hits;
+      return;
+   });
+
+   // $scope.search = function(){
+   //    $http.get('http://localhost:5000/files/').then(function(response){
+   //    $scope.hits = response.hits;
+   //    $scope.results = response.termFacets;
+   //    console.log($scope.hits);
+   //    //$scope.$apply();
+   //    });
+   //    //$scope.refresh();
+   // }
+   $scope.checking = function(facet, item){
+
+   }
+
+   $scope.hasCheck = function(facet, item){
+
+   }
+});
+
 //to do: Get manifest to download without showing all the results.
 //add to GitHub!!! tag with something

@@ -1,5 +1,5 @@
 <!doctype html>
-<html ng-app="EsConnector">
+<html ng-app="MyAPI_Connector">
    <head>
       <meta http-equiv="content-type" content="text/html; charset=UTF-8">
          <title>File Browser</title>
@@ -77,8 +77,7 @@
       <li><a href="../about.html">About</a></li>
    </ul>
    
-   <body ng-controller="QueryController">
-
+   <body ng-controller="API_Controller">
       <div>  
          <div class="container-fluid">
             <div class="row-fluid"> 
@@ -87,7 +86,7 @@
                      <li class="divider"></li>
                      
                         <li class="nav-header">Center</li>
-                        <div ng-repeat="item in results.center_name.buckets">
+                        <div ng-repeat="item in results.centerName.buckets">
                            <input type="checkbox" ng-checked="hasCheck('center_name', item['key'])" ng-click="checking('center_name', item['key'])">
                               {{item['key']}} <span class="muted">{{item['doc_count']}}</span>
                            </input>
@@ -103,7 +102,7 @@
                         <li class="divider"></li> 
       
                         <li class="nav-header">Project</li>
-                        <div ng-repeat="item in results.project.buckets">
+                        <div ng-repeat="item in results.projectCode.buckets">
                            <input type="checkbox" ng-checked="hasCheck('project', item['key'])" ng-click="checking('project', item['key'])">
                               {{item['key']}} <span class="muted">{{item['doc_count']}}</span>
                            </input>  
@@ -111,7 +110,7 @@
                         <li class="divider"></li> 
       
                         <li class="nav-header">Workflow</li>
-                        <div ng-repeat="item in results.workflow.buckets">
+                        <div ng-repeat="item in results.workFlow.buckets">
                            <input type="checkbox" ng-checked="hasCheck('workflow', item['key'])" ng-click="checking('workflow', item['key'])">
                               {{item['key']}} <span class="muted">{{item['doc_count']}}</span>
                            </input>    
@@ -119,7 +118,7 @@
                         <li class="divider"></li> 
          
                         <li class="nav-header">Analysis Type</li>
-                        <div ng-repeat="item in results.analysis_type.buckets">
+                        <div ng-repeat="item in results.analysisType.buckets">
                            <input type="checkbox" ng-checked="hasCheck('analysis_type', item['key'])"  ng-click="checking('analysis_type', item['key'])">
                               {{item['key']}} <span class="muted">{{item['doc_count']}}</span>
                            </input>    
@@ -127,7 +126,7 @@
                         <li class="divider"></li> 
          
                         <li class="nav-header">Specimen Type</li>
-                        <div ng-repeat="item in results.specimen_type.buckets">
+                        <div ng-repeat="item in results.specimenType.buckets">
                            <input type="checkbox" ng-checked="hasCheck('specimen_type', item['key'])" ng-click="checking('specimen_type', item['key'])">
                               {{item['key']}} <span class="muted">{{item['doc_count']}}</span>
                            </input>    
@@ -135,7 +134,7 @@
                         <li class="divider"></li>         
          
                         <li class="nav-header">File Type</li>
-                        <div ng-repeat="item in results.file_type.buckets">
+                        <div ng-repeat="item in results.fileFormat.buckets">
                            <input type="checkbox" ng-checked="hasCheck('file_type', item['key'])" ng-click="checking('file_type', item['key'])">
                               {{item['key']}} <span class="muted">{{item['doc_count']}}</span>
                            </input> 
@@ -163,15 +162,15 @@
                            </tr>
                         </thead>
                         <tbody>
-                           <tr ng-repeat="item in hits|limitTo:10">
-                              <td>{{item['_source']['project']}}</td>
-                              <td>{{item['_source']['donor']}}</td>
-                              <td>{{item['_source']['specimen_type']}}</td>
-                              <td>{{item['_source']['analysis_type']}}</td>
-                              <td>{{item['_source']['workflow']}}</td>
-                              <td>{{item['_source']['file_type']}}</td>
-                              <td>{{item['_source']['title']}}</td>
-                              <td>{{item['_source']['download_id']}}</td>            
+                           <tr ng-repeat="item in hits">
+                              <td>{{item['project']}}</td>
+                              <td>{{item['donor']}}</td>
+                              <td>{{item['specimen_type']}}</td>
+                              <td>{{item['analysis_type']}}</td>
+                              <td>{{item['workflow']}}</td>
+                              <td>{{item['file_type']}}</td>
+                              <td>{{item['title']}}</td>
+                              <td>{{item['download_id']}}</td>
                            </tr>
                         </tbody>
                   
