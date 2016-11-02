@@ -481,7 +481,6 @@ MyAPI_Connector.factory('myService', function($http){
 });
 
 //Factory with parameters
-
 MyAPI_Connector.factory('myParams', function($http){
    return{
       data: function(){
@@ -506,11 +505,28 @@ MyAPI_Connector.controller('API_Controller', function($scope, $http, $compile, m
    //    return data.data.termFacets;
    // });
 
-   myService.data().then(function(data){
-      $scope.results = data.data.termFacets;
-      $scope.hits = data.data.hits;
-      return;
-   });
+   var get_myService = function(){
+      myService.data().then(function(data){
+         $scope.results = data.data.termFacets;
+         $scope.hits = data.data.hits;
+         return;
+      });
+   }
+
+   var get_myParams = function(){
+      myParams.data().then(function(data){
+         $scope.results = data.data.termFacets;
+         $scope.hits = data.data.hits;
+         return;
+      });
+   }
+   //****REC_ER
+   // myService.data().then(function(data){
+   //    $scope.results = data.data.termFacets;
+   //    $scope.hits = data.data.hits;
+   //    return;
+   // });
+   get_myService();
 
    // $scope.search = function(){
    //    $http.get('http://localhost:5000/files/').then(function(response){
@@ -530,11 +546,7 @@ MyAPI_Connector.controller('API_Controller', function($scope, $http, $compile, m
          console.log(my_filters);
          //Apply the parameters and make the call to the server
          config['params']['filters'] = my_filters;
-         myParams.data().then(function(data){
-            $scope.results = data.data.termFacets;
-            $scope.hits = data.data.hits;
-            return;
-         });
+         get_myParams();
       }
       else{
          //Delete the unchecked filters and call again the web service
@@ -542,11 +554,7 @@ MyAPI_Connector.controller('API_Controller', function($scope, $http, $compile, m
          delete my_filters['file'][facet]; 
          config['params']['filters'] = my_filters;
          //This is where you call the web service again. 
-         myParams.data().then(function(data){
-            $scope.results = data.data.termFacets;
-            $scope.hits = data.data.hits;
-            return;
-         });
+         get_myParams();
 
       }
       console.log(checked_boxes);
