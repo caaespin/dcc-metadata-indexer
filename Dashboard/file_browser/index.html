@@ -183,9 +183,9 @@
       
       <center>
          <div>  
-            <button class="button" ng-click="refresh(-1);"> {{back}} </span></button>
-               <span ng-click="refresh(1);" placeholder="{{next}}"> <button class="button">{{next}} </button>
-                  Page: {{offset+1}} {{of}} {{poutof}}
+            <button class="button" ng-click="refresh(-1);" ng-show="backPages"> {{back}} </span></button>
+               <span placeholder="{{next}}"> <button class="button" ng-show="nextPages" ng-click="refresh(1);">{{next}} </button>
+                  Page: {{offset}} {{of}} {{poutof}}
                </span>
             <button class="button"><span ng-click="downloadfile();">Download Manifest</span></button>
          </div>

@@ -489,54 +489,56 @@ MyAPI_Connector.factory('myParams', function($http){
    }
 });
 
-//I don't think I need to specify the service here like above so I will just shortcut it
+//Controller for the page
 MyAPI_Connector.controller('API_Controller', function($scope, $http, $compile, myService, myParams){
-   //$scope.mamal = 'calabazita'
+   //Variables to be used to populate the page
    $scope.hits = [];
    $scope.results = [];
-
+   $scope.offset = 0;
+   $scope.poutof = 0;
+   $scope.of = "of";
+   $scope.back = "Back";
+   $scope.next = "Next";
+   $scope.pageSize = 0;
+   $scope.nextPages = true;
+   $scope.backPages = true;
+   //Keeps track of boxes checked
    var checked_boxes = {};
+   //Map for the filters whenever they are used.
    var my_filters = {'file':{}};
 
-   // $scope.hits = myService.data().then(function(data){
-   //    return data.data.hits;
-   // });
-   // $scope.results = myService.data().then(function(data){
-   //    return data.data.termFacets;
-   // });
-
+   //Assigns the pagination data
+   var get_myPaging = function(data){
+      $scope.offset = data.data.pagination.page;
+      $scope.poutof = data.data.pagination.pages;
+      $scope.pageSize = data.data.pagination.size;
+      verify();
+      //refresh(0);
+   }
+   //Assign the termFacets and hits to the scope variables
+   var assign_Hits_Facets = function(data){
+      $scope.results = data.data.termFacets;
+      $scope.hits = data.data.hits;
+   }
+   //Get a regular default call to the API
    var get_myService = function(){
       myService.data().then(function(data){
-         $scope.results = data.data.termFacets;
-         $scope.hits = data.data.hits;
+         assign_Hits_Facets(data);
+         get_myPaging(data);
          return;
       });
    }
-
+   //Make a call to the API when parameters are included
    var get_myParams = function(){
       myParams.data().then(function(data){
-         $scope.results = data.data.termFacets;
-         $scope.hits = data.data.hits;
+         assign_Hits_Facets(data);
+         get_myPaging(data);
          return;
       });
    }
-   //****REC_ER
-   // myService.data().then(function(data){
-   //    $scope.results = data.data.termFacets;
-   //    $scope.hits = data.data.hits;
-   //    return;
-   // });
+   //Call the regular service to populate the webpage initially
    get_myService();
-
-   // $scope.search = function(){
-   //    $http.get('http://localhost:5000/files/').then(function(response){
-   //    $scope.hits = response.hits;
-   //    $scope.results = response.termFacets;
-   //    console.log($scope.hits);
-   //    //$scope.$apply();
-   //    });
-   //    //$scope.refresh();
-   // }
+   //Function to be called whenever a checkbox is marked; applies the filters. 
    $scope.checking = function(facet, item){
       if(!(facet+item in checked_boxes)){
          //Add the checked box to the array containing all the checked boxes
@@ -544,6 +546,8 @@ MyAPI_Connector.controller('API_Controller', function($scope, $http, $compile, m
          //Set the parameter
          my_filters['file'][facet] = {'is':[item]}; 
          console.log(my_filters);
+         //Delete the from field in the config structure
+         delete config['params']['from'];
          //Apply the parameters and make the call to the server
          config['params']['filters'] = my_filters;
          get_myParams();
@@ -559,7 +563,7 @@ MyAPI_Connector.controller('API_Controller', function($scope, $http, $compile, m
       }
       console.log(checked_boxes);
    }
-
+   //Conditions to allow the checkbox to be either checked or unchecked
    $scope.hasCheck = function(facet, item){
       if(facet+item in checked_boxes){
          return true;
@@ -568,6 +572,34 @@ MyAPI_Connector.controller('API_Controller', function($scope, $http, $compile, m
          return false;
       }
    }
+   //Verify whether the Next or Back button should be hidden
+   var verify = function(){
+      console.log($scope.offset);
+      console.log($scope.poutof);
+      if($scope.offset == 1){
+         $scope.backPages = false;
+         $scope.nextPages = true;
+      }
+      else if($scope.offset == $scope.poutof){
+         $scope.nextPages = false;
+         $scope.backPages = true;
+      }
+      else{
+         $scope.nextPages = true;
+         $scope.backPages = true;
+      }
+   }
+   //Whenever Next or Back is clicked:
+   $scope.refresh = function(pcount){
+      var goToPage = $scope.offset+pcount;
+      //console.log($scope.offset);
+      //Set the parameters to call next batch of items
+      verify();
+      config['params']['from'] = (goToPage*$scope.pageSize) - $scope.pageSize +1;
+      get_myParams();
+      verify();
+   }
+
 });
 
 //to do: Get manifest to download without showing all the results.
