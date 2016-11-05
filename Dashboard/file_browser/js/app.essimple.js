@@ -502,6 +502,15 @@ MyAPI_Connector.controller('API_Controller', function($scope, $http, $compile, m
    $scope.pageSize = 0;
    $scope.nextPages = true;
    $scope.backPages = true;
+   //for the manifest file
+   $scope.numHits = 0;
+   $scope.manData;
+   $scope.bodyArr = [];
+   var bodyStr;
+   //for the pie charts
+   var pieArrAnalysis =[];
+   var pieArrWorkflow =[];
+   var pieArrFile =[];
    //Keeps track of boxes checked
    var checked_boxes = {};
    //Map for the filters whenever they are used.
@@ -515,10 +524,19 @@ MyAPI_Connector.controller('API_Controller', function($scope, $http, $compile, m
       verify();
       //refresh(0);
    }
+   //Holds the Manifest data
+   var get_myManData = function(data){
+      $scope.manData = data.data.hits;
+      console.log("at get_myManData");
+      console.dir($scope.manData);
+      bodydown();
+   }
+   
    //Assign the termFacets and hits to the scope variables
    var assign_Hits_Facets = function(data){
       $scope.results = data.data.termFacets;
       $scope.hits = data.data.hits;
+      $scope.numHits = data.data.pagination.total;
    }
    //Get a regular default call to the API
    var get_myService = function(){
@@ -533,6 +551,18 @@ MyAPI_Connector.controller('API_Controller', function($scope, $http, $compile, m
       myParams.data().then(function(data){
          assign_Hits_Facets(data);
          get_myPaging(data);
+         //updates pie charts
+         drawAnalysisChart();
+         drawWorkflowChart();
+         drawFileChart();
+         return;
+      });
+   }
+   //Make a call to the API for Manifest file
+   var get_myManifest = function(){
+      myParams.data().then(function(data){
+         get_myManData(data);
+         console.log("at get_myManifest");
          return;
       });
    }
@@ -599,8 +629,144 @@ MyAPI_Connector.controller('API_Controller', function($scope, $http, $compile, m
       get_myParams();
       verify();
    }
+   
+   //download as manifest helper function
+   var bodydown = function(){
+      $scope.bodyArr = [];
+      for (var i=0; i<$scope.numHits; i++){
+         var projectDown = $scope.manData[i]['project'];
+         var donorDown = $scope.manData[i]['donor'];
+         var specimen_typeDown = $scope.manData[i]['specimen_type'];
+         var analysis_typeDown = $scope.manData[i]['analysis_type'];
+         var workflowDown = $scope.manData[i]['workflow'];
+         var file_typeDown = $scope.manData[i]['file_type'];
+         var titleDown = $scope.manData[i]['title'];
+         var download_idDown = $scope.manData[i]['download_id'];
+         $scope.bodyArr.push(projectDown+"\t"+donorDown+"\t"+specimen_typeDown+"\t"+analysis_typeDown+"\t"+workflowDown+"\t"+file_typeDown+"\t"+titleDown+"\t"+download_idDown);
+      }
+      bodyStr = $scope.bodyArr[0];
+      for (var i=1;i<$scope.numHits;i++){
+         bodyStr = bodyStr.concat("\n");
+         bodyStr = bodyStr.concat($scope.bodyArr[i]);
+      }
+   }
+   
+   //download Manifest file
+   $scope.downloadfile = function(){
+      config['params']['size'] = $scope.numHits;
+      verify();
+      console.log("calling get_myManifest");
+      get_myManifest();
+      console.log("after calling get_myManifest");
+      console.log("calling makingManifest()");
+      makingManifest();
+      console.log("after calling makingManifest()");
+      verify();
+   }
+   var makingManifest = function(){
+      var titledown = "Project\tDonor\tSpecimen\tType\tAnalysis Type\tWorkflow\tFile Type\tFile\tDownload ID"
+      
+      var file = new File([titledown+"\n"+bodyStr], "results.tsv", {type: "text/plain;charset=utf-8"});
+      saveAs(file);
+      config['params']['size'] = null;
+      console.log("end of calling makingManifest()");
+   }
+   
+   // turns pie data into array format
+   $scope.piedata = function(){
+      pieArrAnalysis =[];
+      var pieTemp = [];
+      var pieTemp2 = [];
+      for (var i=0; i<$scope.results.analysisType.buckets.length; i++){
+         pieTemp = [];
+         pieTemp.push($scope.results.analysisType.buckets[i].key);
+         pieTemp.push($scope.results.analysisType.buckets[i].doc_count);
+         pieTemp2.push(pieTemp);
+      }
+      for (var i=0; i<$scope.results.analysisType.buckets.length; i++){
+         pieArrAnalysis.push(pieTemp2[i]);
+      }
+      pieArrWorkflow =[];
+      pieTemp2 = [];
+      for (var i=0; i<$scope.results.workFlow.buckets.length; i++){
+         pieTemp = [];
+         pieTemp.push($scope.results.workFlow.buckets[i].key);
+         pieTemp.push($scope.results.workFlow.buckets[i].doc_count);
+         pieTemp2.push(pieTemp);
+      }
+      for (var i=0; i<$scope.results.workFlow.buckets.length; i++){
+         pieArrWorkflow.push(pieTemp2[i]);
+      }
+      pieArrFile =[];
+      pieTemp2 = [];
+      for (var i=0; i<$scope.results.fileFormat.buckets.length; i++){
+         pieTemp = [];
+         pieTemp.push($scope.results.fileFormat.buckets[i].key);
+         pieTemp.push($scope.results.fileFormat.buckets[i].doc_count);
+         pieTemp2.push(pieTemp);
+      }
+      for (var i=0; i<$scope.results.fileFormat.buckets.length; i++){
+         pieArrFile.push(pieTemp2[i]);
+      }
+   }
+   
+   //pie chart maker
+   var chart;
+   google.charts.load('current', {'packages':['corechart']});
+   google.charts.setOnLoadCallback(drawAnalysisChart);
+   function drawAnalysisChart() {
+      $scope.piedata($scope.numHits);
+      var data = new google.visualization.DataTable();
+      data.addColumn('string', 'Type');
+      data.addColumn('number', 'Number');
+      data.addRows(pieArrAnalysis);
+
+      var options = {
+         title: 'Analysis Type',
+         width: 425,
+         height: 300
+      };
+
+      chart = new google.visualization.PieChart(document.getElementById('piechartAnalysis'));
+
+      chart.draw(data, options);
+   }      
+   google.charts.setOnLoadCallback(drawWorkflowChart);
+   function drawWorkflowChart() {
+      $scope.piedata($scope.numHits);
+      var data = new google.visualization.DataTable();
+      data.addColumn('string', 'Type');
+      data.addColumn('number', 'Number');
+      data.addRows(pieArrWorkflow);
+      
+      var options = {
+         title: 'Workflow Type',
+         width: 425,
+         height: 300
+      };
+
+      chart = new google.visualization.PieChart(document.getElementById('piechartWorkflow'));
+
+      chart.draw(data, options);
+   }    
+   google.charts.setOnLoadCallback(drawFileChart);
+   function drawFileChart() {
+      $scope.piedata($scope.numHits);
+      var data = new google.visualization.DataTable();
+      data.addColumn('string', 'Type');
+      data.addColumn('number', 'Number');
+      data.addRows(pieArrFile);
+      
+      var options = {
+         title: 'File Type',
+         width: 425,
+         height: 300
+      };
+
+      chart = new google.visualization.PieChart(document.getElementById('piechartFile'));
+
+      chart.draw(data, options);
+   }  
 
 });
 
-//to do: Get manifest to download without showing all the results.
-//add to GitHub!!! tag with something
