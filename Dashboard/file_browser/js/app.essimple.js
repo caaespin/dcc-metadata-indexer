@@ -515,6 +515,9 @@ MyAPI_Connector.controller('API_Controller', function($scope, $http, $compile, m
    var checked_boxes = {};
    //Map for the filters whenever they are used.
    var my_filters = {'file':{}};
+   
+   var field_dict = {};
+
 
    //Assigns the pagination data
    var get_myPaging = function(data){
@@ -566,15 +569,40 @@ MyAPI_Connector.controller('API_Controller', function($scope, $http, $compile, m
          return;
       });
    }
+   
+   //adds facet, for clicking multiple facets
+   var adding_Facet = function(facet, item){
+      if (!(facet in field_dict)){
+         field_dict[facet] = [item];
+      }
+      else{
+         field_dict[facet].push(item);
+      }
+   }
+   
+   var deleting_Facet = function(facet, item){
+      if(field_dict[facet].length == 1){
+         delete field_dict[facet];
+      }
+      else{
+         var index = field_dict[facet].indexOf(item);
+         delete field_dict[facet].splice(index, 1);;
+      }
+      console.log(field_dict);
+   }
+   
    //Call the regular service to populate the webpage initially
    get_myService();
    //Function to be called whenever a checkbox is marked; applies the filters. 
    $scope.checking = function(facet, item){
       if(!(facet+item in checked_boxes)){
          //Add the checked box to the array containing all the checked boxes
+         adding_Facet(facet, item);
          checked_boxes[facet+item] = 1;
          //Set the parameter
-         my_filters['file'][facet] = {'is':[item]}; 
+         for (var key in field_dict){
+            my_filters['file'][key] = {'is': field_dict[key]}; 
+         }
          console.log(my_filters);
          //Delete the from field in the config structure
          delete config['params']['from'];
@@ -585,8 +613,19 @@ MyAPI_Connector.controller('API_Controller', function($scope, $http, $compile, m
       else{
          //Delete the unchecked filters and call again the web service
          delete checked_boxes[facet+item];
-         delete my_filters['file'][facet]; 
-         config['params']['filters'] = my_filters;
+         deleting_Facet(facet, item);
+         var size = 0;
+         for (var key in field_dict){
+            my_filters['file'][key] = {'is': field_dict[key]}; 
+            size++;
+         } 
+         console.log(my_filters);
+         if (size > 0){
+            config['params']['filters'] = my_filters;
+         }
+         else{
+            config['params']['filters'] = null;
+         }
          //This is where you call the web service again. 
          get_myParams();
 
