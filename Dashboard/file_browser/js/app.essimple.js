@@ -599,6 +599,7 @@ MyAPI_Connector.controller('API_Controller', function($scope, $http, $compile, m
    var deleting_Facet = function(facet, item){
       if(field_dict[facet].length == 1){
          delete field_dict[facet];
+         delete my_filters['file'][facet];
       }
       else{
          var index = field_dict[facet].indexOf(item);
@@ -686,6 +687,7 @@ MyAPI_Connector.controller('API_Controller', function($scope, $http, $compile, m
    }
    
    //download as manifest helper function
+   //TO BE DELETED
    var bodydown = function(){
       $scope.bodyArr = [];
       for (var i=0; i<$scope.numHits; i++){
@@ -718,6 +720,7 @@ MyAPI_Connector.controller('API_Controller', function($scope, $http, $compile, m
       console.log("after calling makingManifest()");
       verify();
    }
+   //TO BE DELETED
    var makingManifest = function(){
       var titledown = "Project\tDonor\tSpecimen\tType\tAnalysis Type\tWorkflow\tFile Type\tFile\tDownload ID"
       
