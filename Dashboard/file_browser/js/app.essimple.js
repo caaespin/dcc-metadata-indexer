@@ -470,6 +470,12 @@ var config = {
 
    }
 }
+var my_filters = {'file':{}};
+var configManifest = {
+   params:{
+      filters: null
+   }
+}
 
 //Set up the factory, whatever that means
 MyAPI_Connector.factory('myService', function($http){
@@ -489,8 +495,17 @@ MyAPI_Connector.factory('myParams', function($http){
    }
 });
 
+//Factory for the manifest endpoint. 
+MyAPI_Connector.factory('myManifest', function($http){
+   return{
+      data: function(){
+         return $http.get('http://localhost:5000/files/export', config); //Have to fix the filter system variable. It needs the specific verbose
+      }
+   }
+});
+
 //Controller for the page
-MyAPI_Connector.controller('API_Controller', function($scope, $http, $compile, myService, myParams){
+MyAPI_Connector.controller('API_Controller', function($scope, $http, $compile, myService, myParams, myManifest){
    //Variables to be used to populate the page
    $scope.hits = [];
    $scope.results = [];
@@ -514,7 +529,7 @@ MyAPI_Connector.controller('API_Controller', function($scope, $http, $compile, m
    //Keeps track of boxes checked
    var checked_boxes = {};
    //Map for the filters whenever they are used.
-   var my_filters = {'file':{}};
+   //var my_filters = {'file':{}};
    
    var field_dict = {};
 
@@ -529,10 +544,11 @@ MyAPI_Connector.controller('API_Controller', function($scope, $http, $compile, m
    }
    //Holds the Manifest data
    var get_myManData = function(data){
-      $scope.manData = data.data.hits;
+      //$scope.manData = data.data.hits;
       console.log("at get_myManData");
       console.dir($scope.manData);
-      bodydown();
+      //bodydown();
+
    }
    
    //Assign the termFacets and hits to the scope variables
@@ -563,10 +579,10 @@ MyAPI_Connector.controller('API_Controller', function($scope, $http, $compile, m
    }
    //Make a call to the API for Manifest file
    var get_myManifest = function(){
-      myParams.data().then(function(data){
-         get_myManData(data);
+      myManifest.data().then(function(data){
+         return data;
          console.log("at get_myManifest");
-         return;
+         //return;
       });
    }
    
@@ -698,7 +714,7 @@ MyAPI_Connector.controller('API_Controller', function($scope, $http, $compile, m
       get_myManifest();
       console.log("after calling get_myManifest");
       console.log("calling makingManifest()");
-      makingManifest();
+      //makingManifest();
       console.log("after calling makingManifest()");
       verify();
    }
