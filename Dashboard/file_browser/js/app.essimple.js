@@ -580,6 +580,8 @@ MyAPI_Connector.controller('API_Controller', function($scope, $http, $compile, m
    //Make a call to the API for Manifest file
    var get_myManifest = function(){
       myManifest.data().then(function(data){
+         var file = new File([data.data], {type: "text/plain;charset=utf-8"})
+         saveAs(file, 'manifest.tsv')
          return data;
          console.log("at get_myManifest");
          //return;
