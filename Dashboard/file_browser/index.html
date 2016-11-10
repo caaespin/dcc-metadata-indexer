@@ -178,14 +178,14 @@
                         </thead>
                         <tbody>
                            <tr ng-repeat="item in hits">
-                              <td>{{item['project']}}</td>
-                              <td>{{item['donors']['donorID']}}</td>
-                              <td>{{item['donors']['specimen_type']}}</td>
-                              <td>{{item['dataCategorization']['analysis_type']}}</td>
-                              <td>{{item['workflow']}}</td>
-                              <td>{{item['fileCopies']['indexFile']['fileFormat']}}</td>
-                              <td>{{item['fileCopies']['indexFile']['fileName']}}</td>
-                              <td>{{item['fileCopies']['indexFile']['objectID']}}</td>
+                              <td>{{item['donors'][0]['projectCode']}}</td>
+                              <td>{{item['donors'][0]['donorId']}}</td>
+                              <td>{{item['donors'][0]['specimenType'][0]}}</td>
+                              <td>{{item['dataCategorization']['dataType']}}</td>
+                              <td>{{item['dataCategorization']['experimentalStrategy']}}</td>
+                              <td>{{item['fileCopies'][0]['indexFile']['fileFormat']}}</td>
+                              <td>{{item['fileCopies'][0]['indexFile']['fileName']}}</td>
+                              <td>{{item['fileCopies'][0]['indexFile']['objectId']}}</td>
                            </tr>
                         </tbody>
                   
