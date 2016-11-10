@@ -55,7 +55,9 @@
       }
 
       hr {
-          border-width: 2px;
+         border-width: 2px;
+         margin-top: 0.25em;
+         margin-bottom: 0.5em;
       }
    </style>
    
@@ -78,6 +80,8 @@
    </ul>
    
    <body ng-controller="API_Controller">
+      
+   
       <div>  
          <div class="container-fluid">
             <div class="row-fluid"> 
@@ -93,6 +97,7 @@
                         </div>
                         <li class="divider"></li> 
                         
+<!-- 
                         <li class="nav-header">Program</li>
                         <div ng-repeat="item in results.program.buckets">
                            <input type="checkbox" ng-checked="hasCheck('program', item['key'])" ng-click="checking('program', item['key'])">
@@ -100,6 +105,7 @@
                            </input>  
                         </div>
                         <li class="divider"></li> 
+ -->
       
                         <li class="nav-header">Project</li>
                         <div ng-repeat="item in results.projectCode.buckets">
@@ -144,7 +150,16 @@
                      <li class="divider"></li>     
                   </ul>
                </div>
-         
+               
+               <center>
+               <table>
+                  <td id="piechartWorkflow"></td>
+                  <td id="piechartAnalysis"></td>
+                  <td id="piechartFile"></td>
+               </table>
+               </center>
+               <hr>
+               
                <div class="span5 text">
                   <div class="table-responsive">
                      <table class="table table-striped">
@@ -164,13 +179,13 @@
                         <tbody>
                            <tr ng-repeat="item in hits">
                               <td>{{item['project']}}</td>
-                              <td>{{item['donor']}}</td>
-                              <td>{{item['specimen_type']}}</td>
-                              <td>{{item['analysis_type']}}</td>
+                              <td>{{item['donors']['donorID']}}</td>
+                              <td>{{item['donors']['specimen_type']}}</td>
+                              <td>{{item['dataCategorization']['analysis_type']}}</td>
                               <td>{{item['workflow']}}</td>
-                              <td>{{item['file_type']}}</td>
-                              <td>{{item['title']}}</td>
-                              <td>{{item['download_id']}}</td>
+                              <td>{{item['fileCopies']['indexFile']['fileFormat']}}</td>
+                              <td>{{item['fileCopies']['indexFile']['fileName']}}</td>
+                              <td>{{item['fileCopies']['indexFile']['objectID']}}</td>
                            </tr>
                         </tbody>
                   
@@ -191,15 +206,9 @@
          </div>
       </center>
       
-      <hr>
       
-      <center>
-         <table>
-            <td id="piechartWorkflow"></td>
-            <td id="piechartAnalysis"></td>
-            <td id="piechartFile"></td>
-         </table>
-      </center>
+      
+
    
       <footer class="text">
          <section style="color: white">UCSC Genomics Institute - Analysis Core
