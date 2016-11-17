@@ -133,7 +133,7 @@
          
                         <li class="nav-header">Specimen Type</li>
                         <div ng-repeat="item in results.specimenType.terms">
-                           <input type="checkbox" ng-checked="hasCheck('specimen_type', item['term'])" ng-click="checking('specimen_type', item['key'])">
+                           <input type="checkbox" ng-checked="hasCheck('specimen_type', item['term'])" ng-click="checking('specimen_type', item['term'])">
                               {{item['term']}} <span class="muted">{{item['count']}}</span>
                            </input>    
                         </div>
