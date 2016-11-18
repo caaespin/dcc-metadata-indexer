@@ -562,6 +562,10 @@ MyAPI_Connector.controller('API_Controller', function($scope, $http, $compile, m
       myService.data().then(function(data){
          assign_Hits_Facets(data);
          get_myPaging(data);
+         //Call the pie charts initially //////TEST
+         drawAnalysisChart();
+         drawWorkflowChart();
+         drawFileChart();
          return;
       });
    }
