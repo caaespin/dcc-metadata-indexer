@@ -481,7 +481,7 @@ var configManifest = {
 MyAPI_Connector.factory('myService', function($http){
    return{
       data: function(){
-         return $http.get('http://localhost:5000/files/');
+         return $http.get('http://ec2-54-173-61-18.compute-1.amazonaws.com:5000/files/');
       }
    }
 });
@@ -490,7 +490,7 @@ MyAPI_Connector.factory('myService', function($http){
 MyAPI_Connector.factory('myParams', function($http){
    return{
       data: function(){
-         return $http.get('http://localhost:5000/files/', config);
+         return $http.get('http://ec2-54-173-61-18.compute-1.amazonaws.com:5000/files/', config);
       }
    }
 });
@@ -499,7 +499,7 @@ MyAPI_Connector.factory('myParams', function($http){
 MyAPI_Connector.factory('myManifest', function($http){
    return{
       data: function(){
-         return $http.get('http://localhost:5000/files/export', config); //Have to fix the filter system variable. It needs the specific verbose
+         return $http.get('http://ec2-54-173-61-18.compute-1.amazonaws.com:5000/files/export', config); //Have to fix the filter system variable. It needs the specific verbose
       }
    }
 });
