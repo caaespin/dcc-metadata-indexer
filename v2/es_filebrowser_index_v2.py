@@ -127,7 +127,7 @@ with open("fb_index.jsonl", "w") as fb_index:
          center_name = obj['center_name']
          project = obj['project']
          study = obj['project']
-         program = obj['program']
+         program = "GMKF" if obj['program'] == "GMFK" else obj['program']
          donor = obj['donor_uuid']#obj['submitter_donor_id']
          redwoodDonorUUID = obj['donor_uuid']
          submittedDonorId = obj['submitter_donor_id']
